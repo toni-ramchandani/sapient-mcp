@@ -1,0 +1,18 @@
+{
+  "saplogon_path": "C:\\Program Files (x86)\\SAP\\FrontEnd\\SAPgui\\saplogon.exe",
+
+  "sap_server": "My Dev System",
+  "sap_client": "100",
+  "sap_user": "AUTOMATION_USER",
+  "sap_password": "",
+
+  "caps": ["screenshot", "codegen", "advanced"],
+
+  "port": null,
+  "host": "localhost",
+
+  "screenshot_on_error": true,
+  "output_dir": "C:\\sapient_output",
+  "log_file": "sapient_mcp.log",
+  "codegen_language": "robot"
+}
