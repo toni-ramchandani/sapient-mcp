@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sapient": {
+      "command": "python",
+      "args": ["-m", "sapient_mcp"],
+      "env": {
+        "SAPIENT_MCP_SAPLOGON_PATH": "C:\\Program Files (x86)\\SAP\\FrontEnd\\SAPgui\\saplogon.exe",
+        "SAPIENT_MCP_CAPS": "screenshot,codegen,advanced",
+        "SAPIENT_MCP_OUTPUT_DIR": "C:\\sapient_output"
+      }
+    }
+  }
+}
