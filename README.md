@@ -4,6 +4,17 @@
 
 A **production-ready Model Context Protocol (MCP) server** that enables LLMs (Claude, Copilot, Cursor, etc.) to automate **SAP GUI** using the [RoboSAPiens](https://github.com/imbus/robotframework-robosapiens) library.
 
+### Compatible MCP Clients
+
+| Client | Mode | Notes |
+|---|---|---|
+| **Claude Desktop** | stdio | Full support |
+| **Claude Code** | stdio | Full support |
+| **Cursor** | stdio or SSE | Full support |
+| **VS Code (GitHub Copilot)** | stdio or SSE | Requires Copilot agent mode |
+| **Windsurf** | stdio or SSE | Full support |
+| **Any MCP client** | SSE/HTTP | Via `--port` flag |
+
 ---
 
 ## Prerequisites
@@ -44,9 +55,15 @@ uv pip install -e .
 
 ## Quick Start
 
-### Option A — stdio mode (Claude Desktop / Claude Code)
+### Option A — stdio mode (local clients)
 
-Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`):
+SAPient MCP works with **any MCP-compatible client**. Pick yours below.
+
+---
+
+#### Claude Desktop
+
+Edit `%APPDATA%\Claude\claude_desktop_config.json`:
 
 ```json
 {
@@ -64,14 +81,124 @@ Add to your Claude Desktop config (`%APPDATA%\Claude\claude_desktop_config.json`
 }
 ```
 
-### Option B — SSE/HTTP mode (remote control, CI/CD)
+---
+
+#### Claude Code (CLI)
+
+```bash
+claude mcp add sapient python -m sapient_mcp \
+  -- --caps screenshot,codegen,advanced
+```
+
+Or edit `~/.claude/mcp.json` / `.claude/mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "sapient": {
+      "command": "python",
+      "args": ["-m", "sapient_mcp", "--caps", "screenshot,codegen,advanced"],
+      "env": {
+        "SAPIENT_MCP_SAPLOGON_PATH": "C:\\Program Files (x86)\\SAP\\FrontEnd\\SAPgui\\saplogon.exe",
+        "SAPIENT_MCP_OUTPUT_DIR": "C:\\sapient_output"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### Cursor
+
+Go to `Cursor Settings` → `MCP` → `Add new MCP Server` → type `command`, then enter:
+
+```
+python -m sapient_mcp --caps screenshot,codegen,advanced
+```
+
+Or edit `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "sapient": {
+      "command": "python",
+      "args": ["-m", "sapient_mcp", "--caps", "screenshot,codegen,advanced"],
+      "env": {
+        "SAPIENT_MCP_SAPLOGON_PATH": "C:\\Program Files (x86)\\SAP\\FrontEnd\\SAPgui\\saplogon.exe",
+        "SAPIENT_MCP_OUTPUT_DIR": "C:\\sapient_output"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### VS Code (GitHub Copilot)
+
+Install the MCP server via VS Code CLI:
+
+```bash
+code --add-mcp '{"name":"sapient","command":"python","args":["-m","sapient_mcp","--caps","screenshot,codegen,advanced"]}'
+```
+
+Or add to `.vscode/mcp.json` in your workspace:
+
+```json
+{
+  "servers": {
+    "sapient": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "sapient_mcp", "--caps", "screenshot,codegen,advanced"],
+      "env": {
+        "SAPIENT_MCP_SAPLOGON_PATH": "C:\\Program Files (x86)\\SAP\\FrontEnd\\SAPgui\\saplogon.exe",
+        "SAPIENT_MCP_OUTPUT_DIR": "C:\\sapient_output"
+      }
+    }
+  }
+}
+```
+
+---
+
+#### Windsurf
+
+Edit `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "sapient": {
+      "command": "python",
+      "args": ["-m", "sapient_mcp", "--caps", "screenshot,codegen,advanced"],
+      "env": {
+        "SAPIENT_MCP_SAPLOGON_PATH": "C:\\Program Files (x86)\\SAP\\FrontEnd\\SAPgui\\saplogon.exe",
+        "SAPIENT_MCP_OUTPUT_DIR": "C:\\sapient_output"
+      }
+    }
+  }
+}
+```
+
+---
+
+> **Note:** In stdio mode, SAPient MCP **never writes to stdout or stderr** — all logs go to the log file only. This is required for clean JSON-RPC communication across all clients.
+
+### Option B — SSE/HTTP mode (remote / CI / multi-user)
+
+Best when the SAP machine is separate from where the AI client runs, or when
+multiple developers want to share one SAPient instance.
 
 Run the server on your Windows SAP machine:
 ```bash
 python -m sapient_mcp --port 8765 --caps screenshot,codegen,advanced
 ```
 
-Configure any MCP client to point at:
+Then point **any MCP client** at the HTTP endpoint:
+
 ```json
 {
   "mcpServers": {
@@ -81,6 +208,8 @@ Configure any MCP client to point at:
   }
 }
 ```
+
+This works identically in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf, and any other MCP-compatible client.
 
 ### Option C — Config file
 
