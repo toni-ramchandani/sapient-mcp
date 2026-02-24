@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment — NEVER commit this
+env/
+venv/
+.venv/
+
+# Credentials & secrets — NEVER commit these
+.env
+sap_config.json
+
+# Output files (screenshots, logs, generated scripts)
+sap_output/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / validation scripts (local dev only)
+check*.py
+test_sap_live.py
